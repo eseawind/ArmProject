@@ -48,8 +48,13 @@
 #include "BitIoLdd1.h"
 #include "MainMotor.h"
 #include "PpgLdd1.h"
-#include "Encoder1.h"
-#include "ExtIntLdd1.h"
+#include "Hand1.h"
+#include "PwmLdd1.h"
+#include "Hand2.h"
+#include "PwmLdd5.h"
+#include "Hand0.h"
+#include "PwmLdd6.h"
+#include "TU1.h"
 #include "PersonalDefine.h"
 
 #ifdef __cplusplus

@@ -24,11 +24,9 @@
 #define Selector3_Dir2 1
 
 //机械手开关对应的SetDutyUS的值
-#define Hand1Open 1
-#define Hand1Close 1
+#define Hand1Open 550
+#define Hand1Close 1100
 
-#define Hand2Open 1
-#define Hand2Close 1
+#define Hand2Open 2100
+#define Hand2Close 1500
 
-unsigned short Selector1Dir,Selector2Dir,Selector3Dir;
-unsigned short Hand1,Hand2;

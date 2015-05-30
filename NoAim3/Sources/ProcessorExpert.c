@@ -37,14 +37,20 @@
 #include "PwmLdd3.h"
 #include "Selector3.h"
 #include "PwmLdd4.h"
+#include "TI1.h"
 #include "TimerIntLdd1.h"
 #include "TU3.h"
 #include "MainMotorDirection.h"
 #include "BitIoLdd1.h"
 #include "MainMotor.h"
 #include "PpgLdd1.h"
-#include "Encoder1.h"
-#include "ExtIntLdd1.h"
+#include "Hand1.h"
+#include "PwmLdd1.h"
+#include "Hand2.h"
+#include "PwmLdd5.h"
+#include "Hand0.h"
+#include "PwmLdd6.h"
+#include "TU1.h"
 /* Including shared modules, which are used for whole project */
 #include "PE_Types.h"
 #include "PE_Error.h"
@@ -52,11 +58,49 @@
 #include "IO_Map.h"
 
 #include "PersonalDefine.h"
-#include "PersonalFunction.h"
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 unsigned short i,count;
 /*lint -save  -e970 Disable MISRA rule (6.3) checking. */
+
+void Selector1To1(void)
+{
+	Selector1_SetDutyUS(Selector1_Dir1);
+}
+void Selector1To2(void)
+{
+	Selector1_SetDutyUS(Selector1_Dir2);
+}
+void Selector2To1(void)
+{
+	Selector2_SetDutyUS(Selector2_Dir1);
+}
+void Selector2To2(void)
+{
+	Selector2_SetDutyUS(Selector2_Dir2);
+}
+void Selector3To1(void)
+{
+	Selector3_SetDutyUS(Selector3_Dir1);
+}
+void Selector3To2(void)
+{
+	Selector3_SetDutyUS(Selector3_Dir2);
+}
+
+//控制机械手使用 HandOpen和HandClose即可
+void HandOpen(void)
+{
+	Hand1_SetDutyUS(Hand1Open);
+	Hand2_SetDutyUS(Hand2Open);
+}
+void HandClose(void)
+{
+	Hand1_SetDutyUS(Hand1Close);
+	Hand2_SetDutyUS(Hand2Close);
+}
+
+
 int main(void)
 /*lint -restore Enable MISRA rule (6.3) checking. */
 
