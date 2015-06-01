@@ -6,7 +6,7 @@
 **     Component   : TimerUnit_LDD
 **     Version     : Component 01.158, Driver 01.11, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-26, 15:16, # CodeGen: 75
+**     Date/Time   : 2015-05-30, 09:36, # CodeGen: 96
 **     Abstract    :
 **          This TimerUnit component provides a low level API for unified hardware access across
 **          various timer devices using the Prescaler-Counter-Compare-Capture timer structure.
@@ -21,7 +21,7 @@
 **            Counter frequency                            : Auto select
 **          Counter restart                                : On-match
 **            Period device                                : LPTMR0_CMR
-**            Period                                       : 4 sec
+**            Period                                       : 2 sec
 **            Interrupt                                    : Enabled
 **              Interrupt                                  : INT_LPTimer
 **              Interrupt priority                         : medium priority
@@ -147,8 +147,8 @@ LDD_TDeviceData* TU3_Init(LDD_TUserData *UserDataPtr)
   LPTMR0_CSR = (LPTMR_CSR_TCF_MASK | LPTMR_CSR_TPS(0x00)); /* Clear control register */
   /* LPTMR0_CMR: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,COMPARE=0xF423 */
   LPTMR0_CMR = LPTMR_CMR_COMPARE(0xF423); /* Set up compare register */
-  /* LPTMR0_PSR: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,PRESCALE=8,PBYP=0,PCS=3 */
-  LPTMR0_PSR = (LPTMR_PSR_PRESCALE(0x08) | LPTMR_PSR_PCS(0x03)); /* Set up prescaler register */
+  /* LPTMR0_PSR: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,PRESCALE=7,PBYP=0,PCS=3 */
+  LPTMR0_PSR = (LPTMR_PSR_PRESCALE(0x07) | LPTMR_PSR_PCS(0x03)); /* Set up prescaler register */
   /* NVIC_IPR7: PRI_28=0x80 */
   NVIC_IPR7 = (uint32_t)((NVIC_IPR7 & (uint32_t)~(uint32_t)(
                NVIC_IP_PRI_28(0x7F)

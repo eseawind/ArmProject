@@ -52,6 +52,8 @@
 #include "PwmLdd1.h"
 #include "Hand2.h"
 #include "PwmLdd5.h"
+#include "Controller.h"
+#include "ASerialLdd1.h"
 #include "Hand0.h"
 #include "PwmLdd6.h"
 #include "TU1.h"

@@ -25,8 +25,11 @@ Generated_Code/PE_LDD.o: ../Generated_Code/PE_LDD.c \
  ../Generated_Code/TU3.h \
  E:/Freescale/CW\ MCU\ v10.5/MCU/ProcessorExpert/lib/Kinetis/pdd/inc/LPTMR_PDD.h \
  ../Generated_Code/MainMotor.h ../Generated_Code/PpgLdd1.h \
- ../Generated_Code/Encoder1.h ../Generated_Code/ExtIntLdd1.h \
- E:/Freescale/CW\ MCU\ v10.5/MCU/ProcessorExpert/lib/Kinetis/pdd/inc/PORT_PDD.h
+ ../Generated_Code/Hand1.h ../Generated_Code/PwmLdd1.h \
+ ../Generated_Code/Hand2.h ../Generated_Code/PwmLdd5.h \
+ ../Generated_Code/Controller.h ../Generated_Code/ASerialLdd1.h \
+ ../Generated_Code/Hand0.h ../Generated_Code/PwmLdd6.h \
+ ../Generated_Code/TU1.h
 
 E:/Freescale/CW\ MCU\ v10.5/MCU/ARM_GCC_Support/ewl/EWL_C/include/lib_ewl.prefix:
 
@@ -98,8 +101,20 @@ E:/Freescale/CW\ MCU\ v10.5/MCU/ProcessorExpert/lib/Kinetis/pdd/inc/LPTMR_PDD.h:
 
 ../Generated_Code/PpgLdd1.h:
 
-../Generated_Code/Encoder1.h:
+../Generated_Code/Hand1.h:
 
-../Generated_Code/ExtIntLdd1.h:
+../Generated_Code/PwmLdd1.h:
 
-E:/Freescale/CW\ MCU\ v10.5/MCU/ProcessorExpert/lib/Kinetis/pdd/inc/PORT_PDD.h:
+../Generated_Code/Hand2.h:
+
+../Generated_Code/PwmLdd5.h:
+
+../Generated_Code/Controller.h:
+
+../Generated_Code/ASerialLdd1.h:
+
+../Generated_Code/Hand0.h:
+
+../Generated_Code/PwmLdd6.h:
+
+../Generated_Code/TU1.h:

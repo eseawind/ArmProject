@@ -30,3 +30,5 @@
 #define Hand2Open 2100
 #define Hand2Close 1500
 
+#define SteerHigh 2500
+#define SteerLow 500

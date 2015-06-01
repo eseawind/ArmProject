@@ -6,7 +6,7 @@
 **     Component   : TimerUnit_LDD
 **     Version     : Component 01.158, Driver 01.11, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-26, 15:12, # CodeGen: 74
+**     Date/Time   : 2015-05-29, 13:38, # CodeGen: 92
 **     Abstract    :
 **          This TimerUnit component provides a low level API for unified hardware access across
 **          various timer devices using the Prescaler-Counter-Compare-Capture timer structure.
@@ -23,7 +23,7 @@
 **            Period device                                : TPM0_MOD
 **            Period                                       : 330 Hz
 **            Interrupt                                    : Disabled
-**          Channel list                                   : 3
+**          Channel list                                   : 5
 **            Channel 0                                    : 
 **              Mode                                       : Compare
 **                Compare                                  : TPM0_C2V
@@ -52,6 +52,26 @@
 **                  Output on overrun                      : Clear
 **                  Initial state                          : Low
 **                  Output pin                             : PTD3/SPI0_MISO/UART2_TX/TPM0_CH3/SPI0_MOSI
+**                  Output pin signal                      : 
+**                Interrupt                                : Disabled
+**            Channel 3                                    : 
+**              Mode                                       : Compare
+**                Compare                                  : TPM0_C4V
+**                Offset                                   : 0 ms
+**                Output on compare                        : Set
+**                  Output on overrun                      : Clear
+**                  Initial state                          : Low
+**                  Output pin                             : CMP0_IN2/PTC8/I2C0_SCL/TPM0_CH4
+**                  Output pin signal                      : 
+**                Interrupt                                : Disabled
+**            Channel 4                                    : 
+**              Mode                                       : Compare
+**                Compare                                  : TPM0_C5V
+**                Offset                                   : 0 ms
+**                Output on compare                        : Set
+**                  Output on overrun                      : Clear
+**                  Initial state                          : Low
+**                  Output pin                             : CMP0_IN3/PTC9/I2C0_SDA/TPM0_CH5
 **                  Output pin signal                      : 
 **                Interrupt                                : Disabled
 **          Initialization                                 : 
@@ -130,12 +150,14 @@ extern "C" {
 #define TU2_CNT_INP_FREQ_R_0 12000048.000192001F /* Counter input frequency in Hz */
 #define TU2_CNT_INP_FREQ_COUNT 0U      /* Count of predefined counter input frequencies */
 #define TU2_PERIOD_TICKS   0x8E0CUL    /* Initialization value of period in 'counter ticks' */
-#define TU2_NUMBER_OF_CHANNELS 0x03U   /* Count of predefined channels */
+#define TU2_NUMBER_OF_CHANNELS 0x05U   /* Count of predefined channels */
 #define TU2_COUNTER_WIDTH  0x10U       /* Counter width in bits  */
 #define TU2_COUNTER_DIR    DIR_UP      /* Direction of counting */
 #define TU2_OFFSET_0_TICKS 0x00ul      /* Initialization value of offset as 'counter ticks' for channel 0 */
 #define TU2_OFFSET_1_TICKS 0x00ul      /* Initialization value of offset as 'counter ticks' for channel 1 */
 #define TU2_OFFSET_2_TICKS 0x00ul      /* Initialization value of offset as 'counter ticks' for channel 2 */
+#define TU2_OFFSET_3_TICKS 0x00ul      /* Initialization value of offset as 'counter ticks' for channel 3 */
+#define TU2_OFFSET_4_TICKS 0x00ul      /* Initialization value of offset as 'counter ticks' for channel 4 */
 /*! Peripheral base address of a device allocated by the component. This constant can be used directly in PDD macros. */
 #define TU2_PRPH_BASE_ADDRESS  0x40038000U
   

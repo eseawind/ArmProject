@@ -5,7 +5,7 @@
 **     Processor   : MKL25Z128VLK4
 **     Version     : Component 01.025, Driver 01.04, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-26, 15:36, # CodeGen: 76
+**     Date/Time   : 2015-06-01, 23:30, # CodeGen: 97
 **     Abstract    :
 **
 **     Settings    :
@@ -43,7 +43,11 @@
 ** Array of initialized device structures of LDD components.
 ** ===========================================================================
 */
-LDD_TDeviceData *PE_LDD_DeviceDataList[9] = {
+LDD_TDeviceData *PE_LDD_DeviceDataList[13] = {
+    NULL,
+    NULL,
+    NULL,
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -122,16 +126,18 @@ bool PE_PeripheralUsed(uint32_t PrphBaseAddress)
   bool result = FALSE;
 
   switch (PrphBaseAddress) {
-    /* Base address allocated by peripheral(s) PTB */
-    case 0x400FF040UL:
+    /* Base address allocated by peripheral(s) PTE */
+    case 0x400FF100UL:
     /* Base address allocated by peripheral(s) TPM0 */
     case 0x40038000UL:
     /* Base address allocated by peripheral(s) LPTMR0 */
     case 0x40040000UL:
     /* Base address allocated by peripheral(s) TPM1 */
     case 0x40039000UL:
-    /* Base address allocated by peripheral(s) PTD */
-    case 0x400FF0C0UL:
+    /* Base address allocated by peripheral(s) UART1 */
+    case 0x4006B000UL:
+    /* Base address allocated by peripheral(s) TPM2 */
+    case 0x4003A000UL:
       result = TRUE;
       break;
     default:

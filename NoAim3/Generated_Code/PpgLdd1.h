@@ -6,7 +6,7 @@
 **     Component   : PPG_LDD
 **     Version     : Component 01.014, Driver 01.03, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-26, 09:40, # CodeGen: 70
+**     Date/Time   : 2015-05-29, 13:48, # CodeGen: 93
 **     Abstract    :
 **          This component implements a programmable pulse generator that
 **          generates signal with variable duty and variable cycle (period).
@@ -19,7 +19,7 @@
 **          Output pin                                     : ADC0_SE8/TSI0_CH0/PTB0/LLWU_P5/I2C0_SCL/TPM1_CH0
 **          Output pin signal                              : 
 **          Interrupt service/event                        : Disabled
-**          Period                                         : 50 Hz
+**          Period                                         : 6 Hz
 **          Starting pulse width                           : 1 ms
 **          Initial polarity                               : low
 **          Initialization                                 : 
@@ -37,11 +37,17 @@
 **            Clock configuration 6                        : This component disabled
 **            Clock configuration 7                        : This component disabled
 **     Contents    :
-**         Init         - LDD_TDeviceData* PpgLdd1_Init(LDD_TUserData *UserDataPtr);
-**         SelectPeriod - LDD_TError PpgLdd1_SelectPeriod(LDD_TDeviceData *DeviceDataPtr,...
-**         SetRatio16   - LDD_TError PpgLdd1_SetRatio16(LDD_TDeviceData *DeviceDataPtr, uint16_t Ratio);
-**         SetDutyUS    - LDD_TError PpgLdd1_SetDutyUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
-**         SetDutyMS    - LDD_TError PpgLdd1_SetDutyMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+**         Init            - LDD_TDeviceData* PpgLdd1_Init(LDD_TUserData *UserDataPtr);
+**         SetPeriodUS     - LDD_TError PpgLdd1_SetPeriodUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+**         SetPeriodMS     - LDD_TError PpgLdd1_SetPeriodMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+**         SetPeriodSec    - LDD_TError PpgLdd1_SetPeriodSec(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+**         SetPeriodReal   - LDD_TError PpgLdd1_SetPeriodReal(LDD_TDeviceData *DeviceDataPtr,...
+**         SetFrequencyHz  - LDD_TError PpgLdd1_SetFrequencyHz(LDD_TDeviceData *DeviceDataPtr, uint16_t...
+**         SetFrequencykHz - LDD_TError PpgLdd1_SetFrequencykHz(LDD_TDeviceData *DeviceDataPtr, uint16_t...
+**         SetFrequencyMHz - LDD_TError PpgLdd1_SetFrequencyMHz(LDD_TDeviceData *DeviceDataPtr, uint16_t...
+**         SetRatio16      - LDD_TError PpgLdd1_SetRatio16(LDD_TDeviceData *DeviceDataPtr, uint16_t Ratio);
+**         SetDutyUS       - LDD_TError PpgLdd1_SetDutyUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+**         SetDutyMS       - LDD_TError PpgLdd1_SetDutyMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
 **
 **     Copyright : 1997 - 2013 Freescale Semiconductor, Inc. All Rights Reserved.
 **     SOURCE DISTRIBUTION PERMISSIBLE as directed in End User License Agreement.
@@ -80,28 +86,16 @@
 extern "C" {
 #endif 
 
-/* These constants are used to specify several distinctive modes of timing defined in the Period property,
-   if the Runtime settings is set to "from list of values".
-   These constants may be used as a parameter for SelectPeriod method, value is an index of selected user mode.
-   The SP_[Timing] constant name denotes a value of period as it is specified by the user, value without spaces and "."
-   is replaced by "_", e.g. for example 16_384ms for 16.384 ms. */
-#ifndef __BWUserType_PpgLdd1_TClockList
-#define __BWUserType_PpgLdd1_TClockList
-  typedef enum {
-    PpgLdd1_SP_50Hz        = 0U,       /* Constant for predefined period "50Hz" selection. */
-    PpgLdd1_SP_6Hz         = 1U,       /* Constant for predefined period "6Hz" selection. */
-    PpgLdd1_SP_12Hz        = 2U,       /* Constant for predefined period "12Hz" selection. */
-    PpgLdd1_SP_15Hz        = 3U,       /* Constant for predefined period "15Hz" selection. */
-    PpgLdd1_SP_18Hz        = 4U,       /* Constant for predefined period "18Hz" selection. */
-    PpgLdd1_SP_21Hz        = 5U,       /* Constant for predefined period "21Hz" selection. */
-    PpgLdd1_SP_24Hz        = 6U,       /* Constant for predefined period "24Hz" selection. */
-    PpgLdd1_SP_27Hz        = 7U,       /* Constant for predefined period "27Hz" selection. */
-    PpgLdd1_SP_30Hz        = 8U        /* Constant for predefined period "30Hz" selection. */
-  } PpgLdd1_TClockList;                /* Type for list of predefined timings. */
-#endif
-#define PpgLdd1_PERIOD_TICKS 0xEA60UL  /* Initial period value in ticks of the timer. */
-#define PpgLdd1_PERIOD_TICKS_0 0xEA60UL /* Period value in ticks of the timer in clock configuration 0. */
-#define PpgLdd1_PERIOD_COUNT 0x09U     /* Count of predefined counter input frequencies */
+#define PpgLdd1_PERIOD_TICKS 0xF424UL  /* Initial period value in ticks of the timer. */
+#define PpgLdd1_PERIOD_TICKS_0 0xF424UL /* Period value in ticks of the timer in clock configuration 0. */
+#define PpgLdd1_SPUS_MIN   0xC350U     /* Lower bound of interval for parameter of method SetPeriodUS */
+#define PpgLdd1_SPUS_MAX   0xFFFFU     /* Upper bound of interval for parameter of method SetPeriodUS */
+#define PpgLdd1_SPMS_MIN   0x32U       /* Lower bound of interval for parameter of method SetPeriodMS */
+#define PpgLdd1_SPMS_MAX   0xA6U       /* Upper bound of interval for parameter of method SetPeriodMS */
+#define PpgLdd1_SPREAL_MIN 0.05F       /* Lower bound of interval for parameter of method SetPeriodReal */
+#define PpgLdd1_SPREAL_MAX 0.166666666667F /* Upper bound of interval for parameter of method SetPeriodReal */
+#define PpgLdd1_SFREQ_HZ_MIN 0x06U     /* Lower bound of interval for parameter of method SetFrequencyHz */
+#define PpgLdd1_SFREQ_HZ_MAX 0x14U     /* Upper bound of interval for parameter of method SetFrequencyHz */
 /*! Peripheral base address of a device allocated by the component. This constant can be used directly in PDD macros. */
 #define PpgLdd1_PRPH_BASE_ADDRESS  0x40039000U
   
@@ -110,7 +104,13 @@ extern "C" {
 
 /* Methods configuration constants - generated for all enabled component's methods */
 #define PpgLdd1_Init_METHOD_ENABLED    /*!< Init method of the component PpgLdd1 is enabled (generated) */
-#define PpgLdd1_SelectPeriod_METHOD_ENABLED /*!< SelectPeriod method of the component PpgLdd1 is enabled (generated) */
+#define PpgLdd1_SetPeriodUS_METHOD_ENABLED /*!< SetPeriodUS method of the component PpgLdd1 is enabled (generated) */
+#define PpgLdd1_SetPeriodMS_METHOD_ENABLED /*!< SetPeriodMS method of the component PpgLdd1 is enabled (generated) */
+#define PpgLdd1_SetPeriodSec_METHOD_ENABLED /*!< SetPeriodSec method of the component PpgLdd1 is enabled (generated) */
+#define PpgLdd1_SetPeriodReal_METHOD_ENABLED /*!< SetPeriodReal method of the component PpgLdd1 is enabled (generated) */
+#define PpgLdd1_SetFrequencyHz_METHOD_ENABLED /*!< SetFrequencyHz method of the component PpgLdd1 is enabled (generated) */
+#define PpgLdd1_SetFrequencykHz_METHOD_ENABLED /*!< SetFrequencykHz method of the component PpgLdd1 is enabled (generated) */
+#define PpgLdd1_SetFrequencyMHz_METHOD_ENABLED /*!< SetFrequencyMHz method of the component PpgLdd1 is enabled (generated) */
 #define PpgLdd1_SetRatio16_METHOD_ENABLED /*!< SetRatio16 method of the component PpgLdd1 is enabled (generated) */
 #define PpgLdd1_SetDutyUS_METHOD_ENABLED /*!< SetDutyUS method of the component PpgLdd1 is enabled (generated) */
 #define PpgLdd1_SetDutyMS_METHOD_ENABLED /*!< SetDutyMS method of the component PpgLdd1 is enabled (generated) */
@@ -147,38 +147,192 @@ LDD_TDeviceData* PpgLdd1_Init(LDD_TUserData *UserDataPtr);
 
 /*
 ** ===================================================================
-**     Method      :  PpgLdd1_SelectPeriod (component PPG_LDD)
+**     Method      :  PpgLdd1_SetPeriodUS (component PPG_LDD)
 */
 /*!
 **     @brief
-**         Sets new period (setting prescaler a clock source, not an
-**         external source such as pin). Up to 16 different values can
-**         be predefined in designed-time. This method is enabled only
-**         if ["Runtime setting type"] property is set to "from list of
-**         values" and if a list of possible periods settings is
-**         specified at design time. Each of these settings constitutes
-**         a _/period/_ and Processor Expert assigns them a _/period
-**         identifier/_. The prescaler corresponding to each mode are
-**         calculated at design time. Modes can be switched at runtime
-**         just by referring to a mode identifier. No run-time
-**         calculations are performed, all the calculations are
-**         performed at design time. The periods and periods
-**         identifiers may be found in the include file *.h.
+**         This method sets the new period of the output signal. The
+**         period is expressed in [microseconds] as a 16-bit unsigned
+**         integer number. This method is available only if ["Runtime
+**         setting type"] property is set to "interval" .
 **     @param
 **         DeviceDataPtr   - Device data structure
 **                           pointer returned by [Init] method.
 **     @param
-**         Period          - New output period as enumeration
-**                           value.
+**         Time            - Period to set [in microseconds]
 **     @return
 **                         - Error code, possible codes:
 **                           ERR_OK - OK
 **                           ERR_SPEED - This device does not work in
 **                           the active clock configuration
-**                           ERR_PARAM_VALUE - Invalid parameter Period
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_PARAM_RANGE - Parameter Time out of
+**                           range
 */
 /* ===================================================================*/
-LDD_TError PpgLdd1_SelectPeriod(LDD_TDeviceData *DeviceDataPtr, PpgLdd1_TClockList Period);
+LDD_TError PpgLdd1_SetPeriodUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+
+/*
+** ===================================================================
+**     Method      :  PpgLdd1_SetPeriodMS (component PPG_LDD)
+*/
+/*!
+**     @brief
+**         This method sets the new period of the output signal. The
+**         period is expressed in [milliseconds] as a 16-bit unsigned
+**         integer number. This method is available only if ["Runtime
+**         setting type"] property is set to "interval" .
+**     @param
+**         DeviceDataPtr   - Device data structure
+**                           pointer returned by [Init] method.
+**     @param
+**         Time            - Period to set [in milliseconds]
+**     @return
+**                         - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active clock configuration
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_PARAM_RANGE - Parameter Time out of
+**                           range
+*/
+/* ===================================================================*/
+LDD_TError PpgLdd1_SetPeriodMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+
+/*
+** ===================================================================
+**     Method      :  PpgLdd1_SetPeriodSec (component PPG_LDD)
+*/
+/*!
+**     @brief
+**         This method sets the new period of the output signal. The
+**         period is expressed in [seconds] as a 16-bit unsigned
+**         integer number. This method is available only if ["Runtime
+**         setting type"] property is set to "interval" .
+**     @param
+**         DeviceDataPtr   - Device data structure
+**                           pointer returned by [Init] method.
+**     @param
+**         Time            - Period to set [in seconds]
+**     @return
+**                         - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active clock configuration
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_PARAM_RANGE - Parameter Time out of
+**                           range
+*/
+/* ===================================================================*/
+LDD_TError PpgLdd1_SetPeriodSec(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+
+/*
+** ===================================================================
+**     Method      :  PpgLdd1_SetPeriodReal (component PPG_LDD)
+*/
+/*!
+**     @brief
+**         This method sets the new period of the output signal. The
+**         period is expressed in [seconds] as a real number. To use
+**         this method the compiler have to support floating point
+**         operations. This method is available only if ["Runtime
+**         setting type"] property is set to "interval" .
+**     @param
+**         DeviceDataPtr   - Device data structure
+**                           pointer returned by [Init] method.
+**     @param
+**         Time            - Period to set [in seconds]
+**     @return
+**                         - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active speed mode
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_PARAM_RANGE - Parameter out of range
+*/
+/* ===================================================================*/
+LDD_TError PpgLdd1_SetPeriodReal(LDD_TDeviceData *DeviceDataPtr, LDD_PPG_Tfloat Time);
+
+/*
+** ===================================================================
+**     Method      :  PpgLdd1_SetFrequencyHz (component PPG_LDD)
+*/
+/*!
+**     @brief
+**         This method sets the new frequency of the output signal. The
+**         frequency is expressed in [Hz] as a 16-bit unsigned integer
+**         number. This method is available only if ["Runtime setting
+**         type"] property is set to "interval" .
+**     @param
+**         DeviceDataPtr   - Device data structure
+**                           pointer returned by [Init] method.
+**     @param
+**         Frequency       - Frequency to set [in Hz]
+**     @return
+**                         - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active clock configuration
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_PARAM_RANGE - Parameter Frequency is
+**                           out of range
+*/
+/* ===================================================================*/
+LDD_TError PpgLdd1_SetFrequencyHz(LDD_TDeviceData *DeviceDataPtr, uint16_t Frequency);
+
+/*
+** ===================================================================
+**     Method      :  PpgLdd1_SetFrequencykHz (component PPG_LDD)
+*/
+/*!
+**     @brief
+**         This method sets the new frequency of the output signal. The
+**         frequency is expressed in [kHz] as a 16-bit unsigned integer
+**         number. This method is available only if ["Runtime setting
+**         type"] property is set to "interval" .
+**     @param
+**         DeviceDataPtr   - Device data structure
+**                           pointer returned by [Init] method.
+**     @param
+**         Frequency       - Frequency to set [in kHz]
+**     @return
+**                         - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active clock configuration
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_PARAM_RANGE - Parameter Frequency is
+**                           out of range
+*/
+/* ===================================================================*/
+LDD_TError PpgLdd1_SetFrequencykHz(LDD_TDeviceData *DeviceDataPtr, uint16_t Frequency);
+
+/*
+** ===================================================================
+**     Method      :  PpgLdd1_SetFrequencyMHz (component PPG_LDD)
+*/
+/*!
+**     @brief
+**         This method sets the new frequency of the output signal. The
+**         frequency is expressed in [MHz] as a 16-bit unsigned integer
+**         number. This method is available only if ["Runtime setting
+**         type"] property is set to "interval" .
+**     @param
+**         DeviceDataPtr   - Device data structure
+**                           pointer returned by [Init] method.
+**     @param
+**         Frequency       - Frequency to set [in MHz]
+**     @return
+**                         - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active clock configuration
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_PARAM_RANGE - Parameter Frequency is
+**                           out of range
+*/
+/* ===================================================================*/
+LDD_TError PpgLdd1_SetFrequencyMHz(LDD_TDeviceData *DeviceDataPtr, uint16_t Frequency);
 
 /*
 ** ===================================================================

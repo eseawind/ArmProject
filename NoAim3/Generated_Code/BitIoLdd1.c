@@ -6,7 +6,7 @@
 **     Component   : BitIO_LDD
 **     Version     : Component 01.033, Driver 01.03, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-26, 08:58, # CodeGen: 62
+**     Date/Time   : 2015-05-29, 13:35, # CodeGen: 91
 **     Abstract    :
 **         The HAL BitIO component provides a low level API for unified
 **         access to general purpose digital input/output pins across
@@ -16,12 +16,12 @@
 **         portable to various microprocessors.
 **     Settings    :
 **          Component name                                 : BitIoLdd1
-**          Pin for I/O                                    : ADC0_SE13/TSI0_CH8/PTB3/I2C0_SDA/TPM2_CH1
+**          Pin for I/O                                    : PTE5
 **          Pin signal                                     : 
 **          Direction                                      : Input/Output
 **          Initialization                                 : 
 **            Init. direction                              : Output
-**            Init. value                                  : 0
+**            Init. value                                  : 1
 **            Auto initialization                          : yes
 **          Safe mode                                      : yes
 **     Contents    :
@@ -102,14 +102,14 @@ LDD_TDeviceData* BitIoLdd1_Init(LDD_TUserData *UserDataPtr)
   DeviceDataPrv = &DeviceDataPrv__DEFAULT_RTOS_ALLOC;
   DeviceDataPrv->UserDataPtr = UserDataPtr; /* Store the RTOS device structure */
   /* Configure pin as output */
-  /* GPIOB_PDDR: PDD|=8 */
-  GPIOB_PDDR |= GPIO_PDDR_PDD(0x08);                                   
+  /* GPIOE_PDDR: PDD|=0x20 */
+  GPIOE_PDDR |= GPIO_PDDR_PDD(0x20);                                   
   /* Set initialization value */
-  /* GPIOB_PDOR: PDO&=~8 */
-  GPIOB_PDOR &= (uint32_t)~(uint32_t)(GPIO_PDOR_PDO(0x08));                                   
+  /* GPIOE_PDOR: PDO|=0x20 */
+  GPIOE_PDOR |= GPIO_PDOR_PDO(0x20);                                   
   /* Initialization of Port Control register */
-  /* PORTB_PCR3: ISF=0,MUX=1 */
-  PORTB_PCR3 = (uint32_t)((PORTB_PCR3 & (uint32_t)~(uint32_t)(
+  /* PORTE_PCR5: ISF=0,MUX=1 */
+  PORTE_PCR5 = (uint32_t)((PORTE_PCR5 & (uint32_t)~(uint32_t)(
                 PORT_PCR_ISF_MASK |
                 PORT_PCR_MUX(0x06)
                )) | (uint32_t)(

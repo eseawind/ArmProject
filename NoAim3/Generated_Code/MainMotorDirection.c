@@ -6,7 +6,7 @@
 **     Component   : BitIO
 **     Version     : Component 02.086, Driver 01.00, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-26, 08:58, # CodeGen: 62
+**     Date/Time   : 2015-05-29, 13:35, # CodeGen: 91
 **     Abstract    :
 **         This component "BitIO" implements an one-bit input/output.
 **         It uses one bit/pin of a port.
@@ -17,21 +17,21 @@
 **             ----------------------------------------------------
 **                Number (on package)  |    Name
 **             ----------------------------------------------------
-**                       46            |  ADC0_SE13/TSI0_CH8/PTB3/I2C0_SDA/TPM2_CH1
+**                       6             |  PTE5
 **             ----------------------------------------------------
 **
-**         Port name                   : PTB
+**         Port name                   : PTE
 **
-**         Bit number (in port)        : 3
-**         Bit mask of the port        : 0x0008
+**         Bit number (in port)        : 5
+**         Bit mask of the port        : 0x0020
 **
 **         Initial direction           : Output (direction can be changed)
 **         Safe mode                   : yes
-**         Initial output value        : 0
+**         Initial output value        : 1
 **         Initial pull option         : off
 **
-**         Port data register          : GPIOB_PDOR [0x400FF040]
-**         Port control register       : GPIOB_PDDR [0x400FF054]
+**         Port data register          : GPIOE_PDOR [0x400FF100]
+**         Port control register       : GPIOE_PDDR [0x400FF114]
 **
 **         Optimization for            : speed
 **     Contents    :

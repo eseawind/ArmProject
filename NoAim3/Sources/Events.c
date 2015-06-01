@@ -36,6 +36,8 @@ extern "C" {
 #endif 
 
 extern unsigned short i,count; 
+extern void HandOpen(void);
+extern void HandClose(void);
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 
@@ -79,16 +81,12 @@ void TI1_OnInterrupt(void)
 {
 	if(i)
 	{
-		Selector1_SetDutyUS(1900);
-		//Selector2_SetDutyUS(2000);
-		Selector3_SetDutyUS(600);
+		Hand0_SetDutyUS(500);
 		i=0;
 	}
 	else
 	{
-		Selector1_SetDutyUS(1500);
-		//Selector2_SetDutyUS(500);
-		Selector3_SetDutyUS(1100);
+		Hand0_SetDutyUS(2500);
 		i=1;
 	}
 }

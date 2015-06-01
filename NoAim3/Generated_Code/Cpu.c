@@ -7,7 +7,7 @@
 **     Version     : Component 01.025, Driver 01.04, CPU db: 3.00.000
 **     Datasheet   : KL25P80M48SF0RM, Rev.3, Sep 2012
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-26, 15:42, # CodeGen: 77
+**     Date/Time   : 2015-06-01, 23:30, # CodeGen: 97
 **     Abstract    :
 **
 **     Settings    :
@@ -49,8 +49,15 @@
 #include "TU3.h"
 #include "MainMotor.h"
 #include "PpgLdd1.h"
-#include "Encoder1.h"
-#include "ExtIntLdd1.h"
+#include "Hand1.h"
+#include "PwmLdd1.h"
+#include "Hand2.h"
+#include "PwmLdd5.h"
+#include "Controller.h"
+#include "ASerialLdd1.h"
+#include "Hand0.h"
+#include "PwmLdd6.h"
+#include "TU1.h"
 #include "PE_Types.h"
 #include "PE_Error.h"
 #include "PE_Const.h"
@@ -116,8 +123,10 @@ void __init_hardware(void)
   /* System clock initialization */
   /* SIM_CLKDIV1: OUTDIV1=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,OUTDIV4=3,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0 */
   SIM_CLKDIV1 = (SIM_CLKDIV1_OUTDIV1(0x00) | SIM_CLKDIV1_OUTDIV4(0x03)); /* Set the system prescalers to safe value */
-  /* SIM_SCGC5: PORTD=1,PORTB=1,PORTA=1 */
-  SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK |
+  /* SIM_SCGC5: PORTE=1,PORTD=1,PORTC=1,PORTB=1,PORTA=1 */
+  SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK |
+               SIM_SCGC5_PORTD_MASK |
+               SIM_SCGC5_PORTC_MASK |
                SIM_SCGC5_PORTB_MASK |
                SIM_SCGC5_PORTA_MASK;   /* Enable clock gate for ports to enable pin routing */
   /* SIM_SCGC5: LPTMR=1 */
@@ -236,8 +245,6 @@ void PE_low_level_init(void)
   /* SMC_PMPROT: ??=0,??=0,AVLP=0,??=0,ALLS=0,??=0,AVLLS=0,??=0 */
   SMC_PMPROT = 0x00U;                  /* Setup Power mode protection register */
   /* Common initialization of the CPU registers */
-  /* GPIOD_PDDR: PDD&=~0x20 */
-  GPIOD_PDDR &= (uint32_t)~(uint32_t)(GPIO_PDDR_PDD(0x20));                                   
   /* PORTA_PCR20: ISF=0,MUX=7 */
   PORTA_PCR20 = (uint32_t)((PORTA_PCR20 & (uint32_t)~(uint32_t)(
                  PORT_PCR_ISF_MASK
@@ -259,8 +266,14 @@ void PE_low_level_init(void)
   /* ### TimerInt "TI1" init code ... */
   /* ### PPG_LDD "PpgLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)PpgLdd1_Init(NULL);
-  /* ### ExtInt_LDD "ExtIntLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
-  (void)ExtIntLdd1_Init(NULL);
+  /* ### PWM_LDD "PwmLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)PwmLdd1_Init(NULL);
+  /* ### PWM_LDD "PwmLdd5" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)PwmLdd5_Init(NULL);
+  /* ### Asynchro serial "Controller" init code ... */
+  Controller_Init();
+  /* ### PWM_LDD "PwmLdd6" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)PwmLdd6_Init(NULL);
   __EI();
 }
   /* Flash configuration field */

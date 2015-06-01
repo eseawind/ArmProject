@@ -48,6 +48,8 @@
 #include "PwmLdd1.h"
 #include "Hand2.h"
 #include "PwmLdd5.h"
+#include "Controller.h"
+#include "ASerialLdd1.h"
 #include "Hand0.h"
 #include "PwmLdd6.h"
 #include "TU1.h"
@@ -60,7 +62,10 @@
 #include "PersonalDefine.h"
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
-unsigned short i,count;
+unsigned short HandPosition;//爪旋转位置
+unsigned char ASBuffer[5]; //从蓝牙获得的值
+unsigned short TempNum1,TempNum2;
+unsigned short i,count=0;
 /*lint -save  -e970 Disable MISRA rule (6.3) checking. */
 
 void Selector1To1(void)
@@ -88,6 +93,12 @@ void Selector3To2(void)
 	Selector3_SetDutyUS(Selector3_Dir2);
 }
 
+void HandGo(void)
+{
+	if(HandPosition<=SteerHigh&&HandPosition>=SteerLow)//该区间的值能控制电机
+		Hand0_SetDutyUS(HandPosition);
+}
+
 //控制机械手使用 HandOpen和HandClose即可
 void HandOpen(void)
 {
@@ -98,6 +109,51 @@ void HandClose(void)
 {
 	Hand1_SetDutyUS(Hand1Close);
 	Hand2_SetDutyUS(Hand2Close);
+}
+
+void ClearASBuffer(void)
+{
+	unsigned short i;
+	for(i=0;i<6;i++)
+		ASBuffer[i]=0;
+}
+
+void SelectorControl(void)
+{
+	  while(Controller_RecvChar(&ASBuffer[1])!=ERR_OK)
+		  ;
+	  while(Controller_RecvChar(&ASBuffer[2])!=ERR_OK)
+		  ;
+	  switch(ASBuffer[1])
+	  {
+	  case '1':
+		  if(ASBuffer[2]==1)
+			  Selector1To1();
+		  else if(ASBuffer[2]==2)
+			  Selector1To2();
+		  else ;
+		  break;
+	  case '2':
+		  if(ASBuffer[2]==1)
+			  Selector2To1();
+		  else if(ASBuffer[2]==2)
+			  Selector2To2();
+		  else ;
+		  break;
+	  case '3':
+		  if(ASBuffer[2]==1)
+			  Selector3To1();
+		  else if(ASBuffer[2]==2)
+			  Selector3To2();
+		  else ;
+		  break;
+	  }
+}
+
+void SendOK(void)
+{
+	Controller_SendChar('O');
+	Controller_SendChar('K');
 }
 
 
@@ -112,13 +168,43 @@ int main(void)
   /*** End of Processor Expert internal initialization.                    ***/
 
   /* Write your code here */
-  
-  /* For example: for(;;) { } */
-  i=0;
-  count=0;
+  HandPosition=0;
   while(1)
   {
-	  
+	  Controller_RecvChar(&ASBuffer[0]);
+	  switch(ASBuffer[0])
+	  {
+	  case 'A':           //机械手闭合
+		  HandClose();
+		  SendOK();
+		  break;
+	  case 'B':           //机械手打开
+		  HandOpen();
+		  SendOK();
+		  break;
+	  case 'C':           //机械手顺时针旋转
+		  if(HandPosition<2490)
+			  HandPosition+=10;
+		  else 
+			  Controller_SendChar('N');
+		  HandGo();
+		  break;
+	  case 'D':           //机械手逆时针旋转
+		  if(HandPosition>490)
+			  HandPosition-=10;
+		  else 
+			  Controller_SendChar('N');
+		  HandGo();
+		  break;
+	  case 'S':           //换向阀
+		  SelectorControl();
+		  break;
+		  
+
+		  
+		  
+	  }
+	  ClearASBuffer();
   }
   
   /*** Don't write any code pass this line, or it will be deleted during code generation. ***/

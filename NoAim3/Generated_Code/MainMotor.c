@@ -6,7 +6,7 @@
 **     Component   : PPG
 **     Version     : Component 02.195, Driver 01.00, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-26, 09:40, # CodeGen: 70
+**     Date/Time   : 2015-05-29, 13:48, # CodeGen: 93
 **     Abstract    :
 **         This component "PPG" implements a programmable
 **         pulse generator that generates signal with variable
@@ -39,21 +39,33 @@
 **         Port data register          : GPIOB_PDOR [0x400FF040]
 **         Port control register       : GPIOB_PDDR [0x400FF054]
 **
-**         Runtime setting period      : modes (list of settings)
+**         Runtime setting period      : interval (continual setting)
+**             microseconds            : 50000 to 166666 microseconds
+**             milliseconds            : 50 to 166 milliseconds
+**             seconds (real)          : 0.05 to 0.166666666667 seconds
+**             Hz                      : 6 to 20 Hz
+**
 **         Runtime setting ratio       : calculated
 **         Initialization:
 **              Output level           : low
 **              Timer                  : Enabled
 **              Event                  : Enabled
 **         High speed mode
-**             Prescaler               : divide-by-16
-**           Initial value of            period        pulse width (ratio 5%)
-**             microseconds            : 20000         1000
-**             milliseconds            : 20            1
-**             seconds (real)          : 0.02          0.001
+**             Prescaler               : divide-by-128
+**             Clock                   : 375000 Hz
+**           Initial value of            period        pulse width (ratio 0.6%)
+**             microseconds            : 166667        1000
+**             milliseconds            : 167           1
+**             seconds (real)          : 0.166666666667 0.001
 **
 **     Contents    :
-**         SetPeriodMode - byte MainMotor_SetPeriodMode(byte Mode);
+**         SetPeriodUS   - byte MainMotor_SetPeriodUS(word Time);
+**         SetPeriodMS   - byte MainMotor_SetPeriodMS(word Time);
+**         SetPeriodSec  - byte MainMotor_SetPeriodSec(word Time);
+**         SetPeriodReal - byte MainMotor_SetPeriodReal(float Time);
+**         SetFreqHz     - byte MainMotor_SetFreqHz(word Freq);
+**         SetFreqkHz    - byte MainMotor_SetFreqkHz(word Freq);
+**         SetFreqMHz    - byte MainMotor_SetFreqMHz(word Freq);
 **         SetRatio16    - byte MainMotor_SetRatio16(word Ratio);
 **         SetDutyUS     - byte MainMotor_SetDutyUS(word Time);
 **         SetDutyMS     - byte MainMotor_SetDutyMS(word Time);
@@ -83,41 +95,240 @@
 
 /*
 ** ===================================================================
-**     Method      :  MainMotor_SetPeriodMode (component PPG)
+**     Method      :  MainMotor_SetPeriodUS (component PPG)
 **     Description :
-**         This method switches the component to a specified mode
-**         (changes the period/frequency using the mode values). Each
-**         mode is identified by a single 8-bit unsigned number which
-**         expresses one period/frequency of the generated signal. This
-**         method reduce the time needed for setting a new period value.
-**         This method is enabled only if a list of possible period
-**         settings is specified at design time (see <Timing dialog box>
-**         - Runtime setting - from a list of values). Each of these
-**         settings constitutes a _/mode/_ and Processor Expert assigns
-**         them a _/mode identifier/_ (see public constants in the
-**         generated header file). The prescaler and compare values
-**         corresponding to each mode are calculated at design time.
+**         This method sets the new period of the output signal. The
+**         period is expressed in microseconds as a 16-bit unsigned integer
+**         number.
+**         This method is only available when the runtime setting type
+**         'from interval' is selected in the Timing dialog box of
+**         the Runtime setting area.
 **     Parameters  :
-**         NAME            - DESCRIPTION
-**         Mode            - Specifies a Mode to switch to. It is
-**                           recommended to use public constants from
-**                           the generated header file.
+**         NAME       - DESCRIPTION
+**         Time       - Period to set [in microseconds]
+**                      (50000 to 65535 microseconds)
 **     Returns     :
-**         ---             - Error code, possible codes:
+**         ---        - Error code, possible codes:
 **                           ERR_OK - OK
 **                           ERR_SPEED - This device does not work in
 **                           the active speed mode
-**                           ERR_VALUE - Value out of range, the
-**                           requested timing mode is not defined
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_RANGE - Parameter out of range
 ** ===================================================================
 */
-byte MainMotor_SetPeriodMode(byte Mode)
+byte MainMotor_SetPeriodUS(word Time)
 {
   LDD_TError tmp;
 
-  tmp = PpgLdd1_SelectPeriod(PpgLdd1_DeviceData, (PpgLdd1_TClockList)Mode);
-  if (tmp == ERR_PARAM_VALUE) {
-    return ERR_VALUE;
+  tmp = PpgLdd1_SetPeriodUS(PpgLdd1_DeviceData, (uint16_t)Time);
+  if (tmp == ERR_PARAM_RANGE) {
+    return ERR_RANGE;
+  }
+  return (byte)tmp;
+}
+
+/*
+** ===================================================================
+**     Method      :  MainMotor_SetPeriodMS (component PPG)
+**     Description :
+**         This method sets the new period of the output signal. The
+**         period is expressed in milliseconds as a 16-bit unsigned integer
+**         number.
+**         This method is only available when the runtime setting type
+**         'from interval' is selected in the Timing dialog box of
+**         the Runtime setting area.
+**     Parameters  :
+**         NAME       - DESCRIPTION
+**         Time       - Period to set [in milliseconds]
+**                      (50 to 166 milliseconds)
+**     Returns     :
+**         ---        - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active speed mode
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_RANGE - Parameter out of range
+** ===================================================================
+*/
+byte MainMotor_SetPeriodMS(word Time)
+{
+  LDD_TError tmp;
+
+  tmp = PpgLdd1_SetPeriodMS(PpgLdd1_DeviceData, (uint16_t)Time);
+  if (tmp == ERR_PARAM_RANGE) {
+    return ERR_RANGE;
+  }
+  return (byte)tmp;
+}
+
+/*
+** ===================================================================
+**     Method      :  MainMotor_SetPeriodSec (component PPG)
+**     Description :
+**         This method sets the new period of the output signal. The
+**         period is expressed in seconds as a 16-bit unsigned integer
+**         number.
+**         This method is only available when the runtime setting type
+**         'from interval' is selected in the Timing dialog box of
+**         the Runtime setting area.
+**     Parameters  :
+**         NAME       - DESCRIPTION
+**         Time       - Period to set [in seconds]
+**         Note: The interval is too narrow. The method will return
+**               just the error code.
+**     Returns     :
+**         ---        - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active speed mode
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_RANGE - Parameter out of range
+** ===================================================================
+*/
+byte MainMotor_SetPeriodSec(word Time)
+{
+  LDD_TError tmp;
+
+  tmp = PpgLdd1_SetPeriodSec(PpgLdd1_DeviceData, (uint16_t)Time);
+  if (tmp == ERR_PARAM_RANGE) {
+    return ERR_RANGE;
+  }
+  return (byte)tmp;
+}
+
+/*
+** ===================================================================
+**     Method      :  MainMotor_SetPeriodReal (component PPG)
+**     Description :
+**         This method sets the new period of the output signal. The
+**         period is expressed in seconds as a real number.
+**         This method is only available when the runtime setting type
+**         'from interval' is selected in the Timing dialog box of
+**         the Runtime setting area.
+**     Parameters  :
+**         NAME       - DESCRIPTION
+**         Time       - Period to set [in seconds]
+**                      (0.05 to 0.166666666667 seconds)
+**     Returns     :
+**         ---        - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active speed mode
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_RANGE - Parameter out of range
+** ===================================================================
+*/
+byte MainMotor_SetPeriodReal(TPE_Float Time)
+{
+  LDD_TError tmp;
+
+  tmp = PpgLdd1_SetPeriodReal(PpgLdd1_DeviceData, (LDD_PPG_Tfloat)Time);
+  if (tmp == ERR_PARAM_RANGE) {
+    return ERR_RANGE;
+  }
+  return (byte)tmp;
+}
+
+/*
+** ===================================================================
+**     Method      :  MainMotor_SetFreqHz (component PPG)
+**     Description :
+**         This method sets the new frequency of the output signal. The
+**         frequency is expressed in Hz as a 16-bit unsigned integer
+**         number.
+**         This method is only available when the runtime setting type
+**         'from interval' is selected in the Timing dialog box of
+**         the Runtime setting area.
+**     Parameters  :
+**         NAME       - DESCRIPTION
+**         Freq       - Frequency to set [in Hz]
+**                      (6 to 20 Hz)
+**     Returns     :
+**         ---        - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active speed mode
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_RANGE - Parameter out of range
+** ===================================================================
+*/
+byte MainMotor_SetFreqHz(word Freq)
+{
+  LDD_TError tmp;
+
+  tmp = PpgLdd1_SetFrequencyHz(PpgLdd1_DeviceData, (uint16_t)Freq);
+  if (tmp == ERR_PARAM_RANGE) {
+    return ERR_RANGE;
+  }
+  return (byte)tmp;
+}
+
+/*
+** ===================================================================
+**     Method      :  MainMotor_SetFreqkHz (component PPG)
+**     Description :
+**         This method sets the new frequency of the output signal. The
+**         frequency is expressed in kHz as a 16-bit unsigned integer
+**         number.
+**         This method is only available when the runtime setting type
+**         'from interval' is selected in the Timing dialog box of
+**         the Runtime setting area.
+**     Parameters  :
+**         NAME       - DESCRIPTION
+**         Freq       - Frequency to set [in kHz]
+**         Note: The interval is too narrow. The method will return
+**               just the error code.
+**     Returns     :
+**         ---        - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active speed mode
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_RANGE - Parameter out of range
+** ===================================================================
+*/
+byte MainMotor_SetFreqkHz(word Freq)
+{
+  LDD_TError tmp;
+
+  tmp = PpgLdd1_SetFrequencykHz(PpgLdd1_DeviceData, (uint16_t)Freq);
+  if (tmp == ERR_PARAM_RANGE) {
+    return ERR_RANGE;
+  }
+  return (byte)tmp;
+}
+
+/*
+** ===================================================================
+**     Method      :  MainMotor_SetFreqMHz (component PPG)
+**     Description :
+**         This method sets the new frequency of the output signal. The
+**         frequency is expressed in MHz as a 16-bit unsigned integer
+**         number.
+**         This method is only available when the runtime setting type
+**         'from interval' is selected in the Timing dialog box of
+**         the Runtime setting area.
+**     Parameters  :
+**         NAME       - DESCRIPTION
+**         Freq       - Frequency to set [in MHz]
+**         Note: The interval is too narrow. The method will return
+**               just the error code.
+**     Returns     :
+**         ---        - Error code, possible codes:
+**                           ERR_OK - OK
+**                           ERR_SPEED - This device does not work in
+**                           the active speed mode
+**                           ERR_MATH - Overflow during evaluation
+**                           ERR_RANGE - Parameter out of range
+** ===================================================================
+*/
+byte MainMotor_SetFreqMHz(word Freq)
+{
+  LDD_TError tmp;
+
+  tmp = PpgLdd1_SetFrequencyMHz(PpgLdd1_DeviceData, (uint16_t)Freq);
+  if (tmp == ERR_PARAM_RANGE) {
+    return ERR_RANGE;
   }
   return (byte)tmp;
 }
@@ -159,6 +370,8 @@ byte MainMotor_SetRatio16(word Ratio)
 **     Parameters  :
 **         NAME       - DESCRIPTION
 **         Time       - Duty to set [in microseconds]
+**                      (0 to 50000 us, resp. to 166666 us
+**                      in high speed mode)
 **     Returns     :
 **         ---        - Error code, possible codes:
 **                           ERR_OK - OK
@@ -189,6 +402,8 @@ byte MainMotor_SetDutyUS(word Time)
 **     Parameters  :
 **         NAME       - DESCRIPTION
 **         Time       - Duty to set [in milliseconds]
+**                      (0 to 50 ms, resp. to 166 ms
+**                      in high speed mode)
 **     Returns     :
 **         ---        - Error code, possible codes:
 **                           ERR_OK - OK

@@ -36,7 +36,11 @@
 - \subpage TU3
 - \subpage TimerIntLdd1
 - \subpage PpgLdd1
-- \subpage ExtIntLdd1
+- \subpage PwmLdd1
+- \subpage PwmLdd5
+- \subpage ASerialLdd1
+- \subpage TU1
+- \subpage PwmLdd6
 
 
 */

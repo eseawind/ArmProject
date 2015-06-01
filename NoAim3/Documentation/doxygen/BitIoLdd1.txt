@@ -18,22 +18,22 @@ by the component.
 <table>
 <tr><td colspan="4" class="ttitle1">BitIoLdd1 Initialization</td></tr>
 <tr><td class="ttitle2">Address</td><td class="ttitle2">Register</td><td class="ttitle2">Register Value</td><td class="ttitle2">Register Description</td></tr>
-<tr><td>0x400FF054</td><td>GPIOB_PDDR</td><td>
-    0x00000008
- </td><td>GPIOB_PDDR register, peripheral BitIoLdd1.</td></tr>
-<tr><td>0x400FF040</td><td>GPIOB_PDOR</td><td>
-    0x00000000
- </td><td>GPIOB_PDOR register, peripheral BitIoLdd1.</td></tr>
-<tr><td>0x4004A00C</td><td>PORTB_PCR3</td><td>
+<tr><td>0x400FF114</td><td>GPIOE_PDDR</td><td>
+    0x00000020
+ </td><td>GPIOE_PDDR register, peripheral BitIoLdd1.</td></tr>
+<tr><td>0x400FF100</td><td>GPIOE_PDOR</td><td>
+    0x00000020
+ </td><td>GPIOE_PDOR register, peripheral BitIoLdd1.</td></tr>
+<tr><td>0x4004D014</td><td>PORTE_PCR5</td><td>
     0x00000100
- </td><td>PORTB_PCR3 register, peripheral BitIoLdd1.</td></tr>
+ </td><td>PORTE_PCR5 register, peripheral BitIoLdd1.</td></tr>
 </table>
 <br/>
 \page BitIoLdd1_regs_details Register Initialization Details
 This page contains detailed description of initialization values for the 
 registers of the peripheral(s) configured by the component. 
 
-<div class="reghdr1">GPIOB_PDDR</div>
+<div class="reghdr1">GPIOE_PDDR</div>
 <div class="regdiag">
 <table class="regtbl">
 <tr class="trd1r">
@@ -69,13 +69,13 @@ registers of the peripheral(s) configured by the component.
 </table>
         
 </div>
-<table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x400FF054</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000008</td></tr>
+<table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x400FF114</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000020</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
 <tr><td>0 - 31</td><td>PDD</td><td>0x00</td><td>Port Data Direction</td>
 </tr></table>
-<div class="reghdr1">GPIOB_PDOR</div>
+<div class="reghdr1">GPIOE_PDOR</div>
 <div class="regdiag">
 <table class="regtbl">
 <tr class="trd1r">
@@ -111,13 +111,13 @@ registers of the peripheral(s) configured by the component.
 </table>
         
 </div>
-<table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x400FF040</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000000</td></tr>
+<table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x400FF100</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000020</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
 <tr><td>0 - 31</td><td>PDO</td><td>0x00</td><td>Port Data Output</td>
 </tr></table>
-<div class="reghdr1">PORTB_PCR3</div>
+<div class="reghdr1">PORTE_PCR5</div>
 <div class="regdiag">
 <table class="regtbl">
 <tr class="trd1r">
@@ -161,7 +161,7 @@ registers of the peripheral(s) configured by the component.
 </table>
         
 </div>
-<table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x4004A00C</td></tr>
+<table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x4004D014</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000100</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
@@ -179,12 +179,12 @@ registers of the peripheral(s) configured by the component.
 \page BitIoLdd1_settings Component Settings
 \code
 **          Component name                                 : BitIoLdd1
-**          Pin for I/O                                    : ADC0_SE13/TSI0_CH8/PTB3/I2C0_SDA/TPM2_CH1
+**          Pin for I/O                                    : PTE5
 **          Pin signal                                     : 
 **          Direction                                      : Input/Output
 **          Initialization                                 : 
 **            Init. direction                              : Output
-**            Init. value                                  : 0
+**            Init. value                                  : 1
 **            Auto initialization                          : yes
 **          Safe mode                                      : yes
 \endcode
