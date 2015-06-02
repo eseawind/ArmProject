@@ -60,6 +60,9 @@ Generated_Code/TI1.o: ../Generated_Code/TI1.c \
  E:/Freescale/workspace/NoAim3/Generated_Code/TU1.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/PwmLdd6.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/TU1.h \
+ E:/Freescale/workspace/NoAim3/Generated_Code/RedLed.h \
+ E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd2.h \
+ E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd2.h \
  E:/Freescale/workspace/NoAim3/Sources/PersonalDefine.h \
  ../Generated_Code/TI1.h
 
@@ -184,6 +187,12 @@ E:/Freescale/workspace/NoAim3/Generated_Code/TU1.h:
 E:/Freescale/workspace/NoAim3/Generated_Code/PwmLdd6.h:
 
 E:/Freescale/workspace/NoAim3/Generated_Code/TU1.h:
+
+E:/Freescale/workspace/NoAim3/Generated_Code/RedLed.h:
+
+E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd2.h:
+
+E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd2.h:
 
 E:/Freescale/workspace/NoAim3/Sources/PersonalDefine.h:
 

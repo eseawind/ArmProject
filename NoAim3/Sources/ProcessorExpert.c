@@ -53,6 +53,8 @@
 #include "Hand0.h"
 #include "PwmLdd6.h"
 #include "TU1.h"
+#include "RedLed.h"
+#include "BitIoLdd2.h"
 /* Including shared modules, which are used for whole project */
 #include "PE_Types.h"
 #include "PE_Error.h"
@@ -120,8 +122,10 @@ void ClearASBuffer(void)
 
 void SelectorControl(void)
 {
+	  Controller_SendChar('!');
 	  while(Controller_RecvChar(&ASBuffer[1])!=ERR_OK)
 		  ;
+	  Controller_SendChar('?');
 	  while(Controller_RecvChar(&ASBuffer[2])!=ERR_OK)
 		  ;
 	  switch(ASBuffer[1])
@@ -148,6 +152,7 @@ void SelectorControl(void)
 		  else ;
 		  break;
 	  }
+	  Controller_SendChar('G');
 }
 
 void SendOK(void)
@@ -168,21 +173,25 @@ int main(void)
   /*** End of Processor Expert internal initialization.                    ***/
 
   /* Write your code here */
-  HandPosition=0;
+  HandPosition=1000;
+  HandGo();
   while(1)
   {
 	  Controller_RecvChar(&ASBuffer[0]);
 	  switch(ASBuffer[0])
 	  {
 	  case 'A':           //机械手闭合
+		  RedLed_NegVal();
 		  HandClose();
 		  SendOK();
 		  break;
 	  case 'B':           //机械手打开
+		  RedLed_NegVal();
 		  HandOpen();
 		  SendOK();
 		  break;
 	  case 'C':           //机械手顺时针旋转
+		  RedLed_NegVal();
 		  if(HandPosition<2490)
 			  HandPosition+=10;
 		  else 
@@ -190,13 +199,15 @@ int main(void)
 		  HandGo();
 		  break;
 	  case 'D':           //机械手逆时针旋转
-		  if(HandPosition>490)
+		  RedLed_NegVal();
+		  if(HandPosition>510)
 			  HandPosition-=10;
 		  else 
 			  Controller_SendChar('N');
 		  HandGo();
 		  break;
 	  case 'S':           //换向阀
+		  RedLed_NegVal();
 		  SelectorControl();
 		  break;
 		  

@@ -61,6 +61,9 @@ Sources/ProcessorExpert.o: ../Sources/ProcessorExpert.c \
  E:/Freescale/workspace/NoAim3/Generated_Code/TU1.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/PwmLdd6.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/TU1.h \
+ E:/Freescale/workspace/NoAim3/Generated_Code/RedLed.h \
+ E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd2.h \
+ E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd2.h \
  ../Sources/PersonalDefine.h
 
 E:/Freescale/CW\ MCU\ v10.5/MCU/ARM_GCC_Support/ewl/EWL_C/include/lib_ewl.prefix:
@@ -186,5 +189,11 @@ E:/Freescale/workspace/NoAim3/Generated_Code/TU1.h:
 E:/Freescale/workspace/NoAim3/Generated_Code/PwmLdd6.h:
 
 E:/Freescale/workspace/NoAim3/Generated_Code/TU1.h:
+
+E:/Freescale/workspace/NoAim3/Generated_Code/RedLed.h:
+
+E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd2.h:
+
+E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd2.h:
 
 ../Sources/PersonalDefine.h:

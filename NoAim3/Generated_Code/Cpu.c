@@ -7,7 +7,7 @@
 **     Version     : Component 01.025, Driver 01.04, CPU db: 3.00.000
 **     Datasheet   : KL25P80M48SF0RM, Rev.3, Sep 2012
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-06-01, 23:30, # CodeGen: 97
+**     Date/Time   : 2015-06-02, 08:45, # CodeGen: 98
 **     Abstract    :
 **
 **     Settings    :
@@ -58,6 +58,8 @@
 #include "Hand0.h"
 #include "PwmLdd6.h"
 #include "TU1.h"
+#include "RedLed.h"
+#include "BitIoLdd2.h"
 #include "PE_Types.h"
 #include "PE_Error.h"
 #include "PE_Const.h"
@@ -274,6 +276,8 @@ void PE_low_level_init(void)
   Controller_Init();
   /* ### PWM_LDD "PwmLdd6" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)PwmLdd6_Init(NULL);
+  /* ### BitIO_LDD "BitIoLdd2" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)BitIoLdd2_Init(NULL);
   __EI();
 }
   /* Flash configuration field */

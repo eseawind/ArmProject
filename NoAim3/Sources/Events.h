@@ -57,6 +57,8 @@
 #include "Hand0.h"
 #include "PwmLdd6.h"
 #include "TU1.h"
+#include "RedLed.h"
+#include "BitIoLdd2.h"
 #include "PersonalDefine.h"
 
 #ifdef __cplusplus

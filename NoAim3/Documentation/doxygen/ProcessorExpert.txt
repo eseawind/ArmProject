@@ -41,6 +41,7 @@
 - \subpage ASerialLdd1
 - \subpage TU1
 - \subpage PwmLdd6
+- \subpage BitIoLdd2
 
 
 */
