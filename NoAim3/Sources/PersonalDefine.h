@@ -14,14 +14,14 @@
 
 
 //换向阀各对应PWM波SetDutyUS的值
-#define Selector1_Dir1 1
-#define Selector1_Dir2 1
+#define Selector1_Dir1 600
+#define Selector1_Dir2 2400
 
-#define Selector2_Dir1 1
-#define Selector2_Dir2 1
+#define Selector2_Dir1 600
+#define Selector2_Dir2 2400
 
-#define Selector3_Dir1 1
-#define Selector3_Dir2 1
+#define Selector3_Dir1 600
+#define Selector3_Dir2 2400
 
 //机械手开关对应的SetDutyUS的值
 #define Hand1Open 550

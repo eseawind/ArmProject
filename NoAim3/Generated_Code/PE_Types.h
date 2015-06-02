@@ -6,7 +6,7 @@
 **     Component   : PE_Types
 **     Version     : Driver 01.01
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-06-02, 08:45, # CodeGen: 98
+**     Date/Time   : 2015-06-02, 15:21, # CodeGen: 106
 **     Abstract    :
 **         PE_Types.h - contains definitions of basic types,
 **         register access macros and hardware specific macros
@@ -174,20 +174,19 @@ typedef unsigned long int       uint32;
 ** is used internally as an index to the array of LDD device structures.
 ** ===========================================================================
 */
-#define PE_LDD_COMPONENT_BitIoLdd1_ID            0x00U
-#define PE_LDD_COMPONENT_TU2_ID                  0x01U
-#define PE_LDD_COMPONENT_PwmLdd2_ID              0x02U
-#define PE_LDD_COMPONENT_PwmLdd3_ID              0x03U
-#define PE_LDD_COMPONENT_PwmLdd4_ID              0x04U
-#define PE_LDD_COMPONENT_TU3_ID                  0x05U
-#define PE_LDD_COMPONENT_TimerIntLdd1_ID         0x06U
-#define PE_LDD_COMPONENT_PpgLdd1_ID              0x07U
-#define PE_LDD_COMPONENT_PwmLdd1_ID              0x08U
-#define PE_LDD_COMPONENT_PwmLdd5_ID              0x09U
-#define PE_LDD_COMPONENT_ASerialLdd1_ID          0x0AU
-#define PE_LDD_COMPONENT_TU1_ID                  0x0BU
-#define PE_LDD_COMPONENT_PwmLdd6_ID              0x0CU
-#define PE_LDD_COMPONENT_BitIoLdd2_ID            0x0DU
+#define PE_LDD_COMPONENT_PpgLdd1_ID              0x00U
+#define PE_LDD_COMPONENT_BitIoLdd1_ID            0x01U
+#define PE_LDD_COMPONENT_TU2_ID                  0x02U
+#define PE_LDD_COMPONENT_PwmLdd2_ID              0x03U
+#define PE_LDD_COMPONENT_PwmLdd3_ID              0x04U
+#define PE_LDD_COMPONENT_PwmLdd4_ID              0x05U
+#define PE_LDD_COMPONENT_TU3_ID                  0x06U
+#define PE_LDD_COMPONENT_TU1_ID                  0x07U
+#define PE_LDD_COMPONENT_PwmLdd6_ID              0x08U
+#define PE_LDD_COMPONENT_PwmLdd1_ID              0x09U
+#define PE_LDD_COMPONENT_PwmLdd5_ID              0x0AU
+#define PE_LDD_COMPONENT_ASerialLdd1_ID          0x0BU
+#define PE_LDD_COMPONENT_BitIoLdd2_ID            0x0CU
 
 /*
 ** ===================================================================

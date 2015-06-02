@@ -37,8 +37,6 @@
 #include "PwmLdd3.h"
 #include "Selector3.h"
 #include "PwmLdd4.h"
-#include "TI1.h"
-#include "TimerIntLdd1.h"
 #include "TU3.h"
 #include "MainMotorDirection.h"
 #include "BitIoLdd1.h"
@@ -66,8 +64,8 @@
 /* User includes (#include below this line is not maintained by Processor Expert) */
 unsigned short HandPosition;//爪旋转位置
 unsigned char ASBuffer[5]; //从蓝牙获得的值
+unsigned short Speed;
 unsigned short TempNum1,TempNum2;
-unsigned short i,count=0;
 /*lint -save  -e970 Disable MISRA rule (6.3) checking. */
 
 void Selector1To1(void)
@@ -161,6 +159,11 @@ void SendOK(void)
 	Controller_SendChar('K');
 }
 
+void SendPosition(void)
+{
+	
+}
+
 
 int main(void)
 /*lint -restore Enable MISRA rule (6.3) checking. */
@@ -174,9 +177,11 @@ int main(void)
 
   /* Write your code here */
   HandPosition=1000;
+  Speed=680;
   HandGo();
   while(1)
   {
+	  
 	  Controller_RecvChar(&ASBuffer[0]);
 	  switch(ASBuffer[0])
 	  {
@@ -193,27 +198,44 @@ int main(void)
 	  case 'C':           //机械手顺时针旋转
 		  RedLed_NegVal();
 		  if(HandPosition<2490)
-			  HandPosition+=10;
+			  HandPosition+=50;
 		  else 
 			  Controller_SendChar('N');
 		  HandGo();
+		  Controller_SendChar('U');
 		  break;
 	  case 'D':           //机械手逆时针旋转
 		  RedLed_NegVal();
 		  if(HandPosition>510)
-			  HandPosition-=10;
+			  HandPosition-=50;
 		  else 
 			  Controller_SendChar('N');
 		  HandGo();
+		  Controller_SendChar('D');
+		  break;
+	  case 'E':
+		  RedLed_NegVal();
+		  if(Speed<1000)
+			  Speed+=50;
+		  MainMotor_SetDutyUS(Speed);
+		  break;
+	  case 'F':
+		  RedLed_NegVal();
+		  if(Speed>740)
+			  Speed-=50;
+		  MainMotor_SetDutyUS(Speed);
 		  break;
 	  case 'S':           //换向阀
 		  RedLed_NegVal();
 		  SelectorControl();
 		  break;
+	  case 'Z':
+		  RedLed_NegVal();
+		  SendPosition();
+		  break;
 		  
-
-		  
-		  
+	  default: 
+		  ;
 	  }
 	  ClearASBuffer();
   }

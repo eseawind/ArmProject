@@ -34,12 +34,8 @@ Sources/ProcessorExpert.o: ../Sources/ProcessorExpert.c \
  E:/Freescale/workspace/NoAim3/Generated_Code/Selector3.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/PwmLdd4.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/PwmLdd4.h \
- E:/Freescale/workspace/NoAim3/Generated_Code/TI1.h \
- E:/Freescale/workspace/NoAim3/Generated_Code/TimerIntLdd1.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/TU3.h \
  E:/Freescale/CW\ MCU\ v10.5/MCU/ProcessorExpert/lib/Kinetis/pdd/inc/LPTMR_PDD.h \
- E:/Freescale/workspace/NoAim3/Generated_Code/TimerIntLdd1.h \
- E:/Freescale/workspace/NoAim3/Generated_Code/TU3.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/MainMotorDirection.h \
  E:/Freescale/workspace/NoAim3/Generated_Code/BitIoLdd1.h \
  E:/Freescale/CW\ MCU\ v10.5/MCU/ProcessorExpert/lib/Kinetis/pdd/inc/GPIO_PDD.h \
@@ -136,17 +132,9 @@ E:/Freescale/workspace/NoAim3/Generated_Code/PwmLdd4.h:
 
 E:/Freescale/workspace/NoAim3/Generated_Code/PwmLdd4.h:
 
-E:/Freescale/workspace/NoAim3/Generated_Code/TI1.h:
-
-E:/Freescale/workspace/NoAim3/Generated_Code/TimerIntLdd1.h:
-
 E:/Freescale/workspace/NoAim3/Generated_Code/TU3.h:
 
 E:/Freescale/CW\ MCU\ v10.5/MCU/ProcessorExpert/lib/Kinetis/pdd/inc/LPTMR_PDD.h:
-
-E:/Freescale/workspace/NoAim3/Generated_Code/TimerIntLdd1.h:
-
-E:/Freescale/workspace/NoAim3/Generated_Code/TU3.h:
 
 E:/Freescale/workspace/NoAim3/Generated_Code/MainMotorDirection.h:
 

@@ -6,7 +6,7 @@
 **     Component   : PPG_LDD
 **     Version     : Component 01.014, Driver 01.03, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-05-29, 13:48, # CodeGen: 93
+**     Date/Time   : 2015-06-02, 15:27, # CodeGen: 107
 **     Abstract    :
 **          This component implements a programmable pulse generator that
 **          generates signal with variable duty and variable cycle (period).
@@ -19,8 +19,8 @@
 **          Output pin                                     : ADC0_SE8/TSI0_CH0/PTB0/LLWU_P5/I2C0_SCL/TPM1_CH0
 **          Output pin signal                              : 
 **          Interrupt service/event                        : Disabled
-**          Period                                         : 6 Hz
-**          Starting pulse width                           : 1 ms
+**          Period                                         : 147 Hz
+**          Starting pulse width                           : 0.68027 ms
 **          Initial polarity                               : low
 **          Initialization                                 : 
 **            Enabled in init. code                        : yes
@@ -37,17 +37,10 @@
 **            Clock configuration 6                        : This component disabled
 **            Clock configuration 7                        : This component disabled
 **     Contents    :
-**         Init            - LDD_TDeviceData* PpgLdd1_Init(LDD_TUserData *UserDataPtr);
-**         SetPeriodUS     - LDD_TError PpgLdd1_SetPeriodUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
-**         SetPeriodMS     - LDD_TError PpgLdd1_SetPeriodMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
-**         SetPeriodSec    - LDD_TError PpgLdd1_SetPeriodSec(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
-**         SetPeriodReal   - LDD_TError PpgLdd1_SetPeriodReal(LDD_TDeviceData *DeviceDataPtr,...
-**         SetFrequencyHz  - LDD_TError PpgLdd1_SetFrequencyHz(LDD_TDeviceData *DeviceDataPtr, uint16_t...
-**         SetFrequencykHz - LDD_TError PpgLdd1_SetFrequencykHz(LDD_TDeviceData *DeviceDataPtr, uint16_t...
-**         SetFrequencyMHz - LDD_TError PpgLdd1_SetFrequencyMHz(LDD_TDeviceData *DeviceDataPtr, uint16_t...
-**         SetRatio16      - LDD_TError PpgLdd1_SetRatio16(LDD_TDeviceData *DeviceDataPtr, uint16_t Ratio);
-**         SetDutyUS       - LDD_TError PpgLdd1_SetDutyUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
-**         SetDutyMS       - LDD_TError PpgLdd1_SetDutyMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+**         Init       - LDD_TDeviceData* PpgLdd1_Init(LDD_TUserData *UserDataPtr);
+**         SetRatio16 - LDD_TError PpgLdd1_SetRatio16(LDD_TDeviceData *DeviceDataPtr, uint16_t Ratio);
+**         SetDutyUS  - LDD_TError PpgLdd1_SetDutyUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
+**         SetDutyMS  - LDD_TError PpgLdd1_SetDutyMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
 **
 **     Copyright : 1997 - 2013 Freescale Semiconductor, Inc. All Rights Reserved.
 **     SOURCE DISTRIBUTION PERMISSIBLE as directed in End User License Agreement.
@@ -77,8 +70,6 @@ extern "C" {
 #endif 
 
 typedef struct {
-  uint16_t CmpDuty0;                   /* Duty register value for Clock configuration 0 */
-  uint16_t CmpPeriod0;                 /* Period register value for Clock configuration 0 */
   uint16_t RatioStore;                 /* Ratio of L-level to H-level */
   LDD_TUserData *UserDataPtr;          /* RTOS device data structure */
 } PpgLdd1_TDeviceData;
@@ -133,12 +124,12 @@ LDD_TDeviceData* PpgLdd1_Init(LDD_TUserData *UserDataPtr)
   TPM1_C0SC = 0x00U;                   /* Clear channel status and control register */
   /* TPM1_C1SC: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,CHF=0,CHIE=0,MSB=0,MSA=0,ELSB=0,ELSA=0,??=0,DMA=0 */
   TPM1_C1SC = 0x00U;                   /* Clear channel status and control register */
-  /* TPM1_MOD: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,MOD=0xF423 */
-  TPM1_MOD = TPM_MOD_MOD(0xF423);      /* Set up modulo register */
+  /* TPM1_MOD: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,MOD=0x9F6F */
+  TPM1_MOD = TPM_MOD_MOD(0x9F6F);      /* Set up modulo register */
   /* TPM1_C0SC: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,CHF=0,CHIE=0,MSB=1,MSA=0,ELSB=1,ELSA=1,??=0,DMA=0 */
   TPM1_C0SC = (TPM_CnSC_MSB_MASK | TPM_CnSC_ELSB_MASK | TPM_CnSC_ELSA_MASK); /* Set up channel status and control register */
-  /* TPM1_C0V: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,VAL=0x0177 */
-  TPM1_C0V = TPM_CnV_VAL(0x0177);      /* Set up channel value register */
+  /* TPM1_C0V: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,VAL=0x0FF2 */
+  TPM1_C0V = TPM_CnV_VAL(0x0FF2);      /* Set up channel value register */
   /* PORTB_PCR0: ISF=0,MUX=3 */
   PORTB_PCR0 = (uint32_t)((PORTB_PCR0 & (uint32_t)~(uint32_t)(
                 PORT_PCR_ISF_MASK |
@@ -146,300 +137,12 @@ LDD_TDeviceData* PpgLdd1_Init(LDD_TUserData *UserDataPtr)
                )) | (uint32_t)(
                 PORT_PCR_MUX(0x03)
                ));                                  
-  DeviceDataPrv->RatioStore = 0x0189U; /* Ratio after initialization */
-  DeviceDataPrv->CmpDuty0 = 0x0177U;   /* Duty - duty register value for Clock configuration 0 */
-  DeviceDataPrv->CmpPeriod0 = 0xF423U; /* Period - period register value for Clock configuration 0 */
-  /* TPM1_SC: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,DMA=0,TOF=0,TOIE=0,CPWMS=0,CMOD=1,PS=7 */
-  TPM1_SC = (TPM_SC_CMOD(0x01) | TPM_SC_PS(0x07)); /* Set up status and control register */
+  DeviceDataPrv->RatioStore = 0x199AU; /* Ratio after initialization */
+  /* TPM1_SC: ??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,DMA=0,TOF=0,TOIE=0,CPWMS=0,CMOD=1,PS=3 */
+  TPM1_SC = (TPM_SC_CMOD(0x01) | TPM_SC_PS(0x03)); /* Set up status and control register */
   /* Registration of the device structure */
   PE_LDD_RegisterDeviceStructure(PE_LDD_COMPONENT_PpgLdd1_ID,DeviceDataPrv);
   return ((LDD_TDeviceData *)DeviceDataPrv); /* Return pointer to the device data structure */
-}
-
-/*
-** ===================================================================
-**     Method      :  PpgLdd1_SetPeriodUS (component PPG_LDD)
-*/
-/*!
-**     @brief
-**         This method sets the new period of the output signal. The
-**         period is expressed in [microseconds] as a 16-bit unsigned
-**         integer number. This method is available only if ["Runtime
-**         setting type"] property is set to "interval" .
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         Time            - Period to set [in microseconds]
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK
-**                           ERR_SPEED - This device does not work in
-**                           the active clock configuration
-**                           ERR_MATH - Overflow during evaluation
-**                           ERR_PARAM_RANGE - Parameter Time out of
-**                           range
-*/
-/* ===================================================================*/
-LDD_TError PpgLdd1_SetPeriodUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time)
-{
-  PpgLdd1_TDeviceData *DeviceDataPrv = (PpgLdd1_TDeviceData *)DeviceDataPtr;
-  LDD_PPG_Tfloat rtval;                /* Result of multiplication */
-
-  /* Time test - this test can be disabled by setting the "Ignore range checking"
-     property to the "yes" value in the "Configuration inspector" */
-  if (Time < PpgLdd1_SPUS_MIN) {       /* Is the given value out of range? */
-    return ERR_PARAM_RANGE;            /* If yes then error */
-  }
-  rtval = Time * 0.375F;               /* Multiply given value and Clock configuration 0 coefficient */
-  if (rtval > 0xFFFFUL) {              /* Is the result greater than 65535 ? */
-    DeviceDataPrv->CmpPeriod0 = 0xFFFFU; /* If yes then use maximal possible value */
-  }
-  else {
-    DeviceDataPrv->CmpPeriod0 = (uint16_t)rtval;
-  }
-  SetRatio(DeviceDataPtr);             /* Calculate and set up new appropriate values of the duty and period registers */
-  return ERR_OK;
-}
-
-/*
-** ===================================================================
-**     Method      :  PpgLdd1_SetPeriodMS (component PPG_LDD)
-*/
-/*!
-**     @brief
-**         This method sets the new period of the output signal. The
-**         period is expressed in [milliseconds] as a 16-bit unsigned
-**         integer number. This method is available only if ["Runtime
-**         setting type"] property is set to "interval" .
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         Time            - Period to set [in milliseconds]
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK
-**                           ERR_SPEED - This device does not work in
-**                           the active clock configuration
-**                           ERR_MATH - Overflow during evaluation
-**                           ERR_PARAM_RANGE - Parameter Time out of
-**                           range
-*/
-/* ===================================================================*/
-LDD_TError PpgLdd1_SetPeriodMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time)
-{
-  PpgLdd1_TDeviceData *DeviceDataPrv = (PpgLdd1_TDeviceData *)DeviceDataPtr;
-  LDD_PPG_Tfloat rtval;                /* Result of multiplication */
-
-  /* Time test - this test can be disabled by setting the "Ignore range checking"
-     property to the "yes" value in the "Configuration inspector" */
-  if ((Time > PpgLdd1_SPMS_MAX) || (Time < PpgLdd1_SPMS_MIN)) { /* Is the given value out of range? */
-    return ERR_PARAM_RANGE;            /* If yes then error */
-  }
-  rtval = Time * 375.0F;               /* Multiply given value and Clock configuration 0 coefficient */
-  if (rtval > 0xFFFFUL) {              /* Is the result greater than 65535 ? */
-    DeviceDataPrv->CmpPeriod0 = 0xFFFFU; /* If yes then use maximal possible value */
-  }
-  else {
-    DeviceDataPrv->CmpPeriod0 = (uint16_t)rtval;
-  }
-  SetRatio(DeviceDataPtr);             /* Calculate and set up new appropriate values of the duty and period registers */
-  return ERR_OK;
-}
-
-/*
-** ===================================================================
-**     Method      :  PpgLdd1_SetPeriodSec (component PPG_LDD)
-*/
-/*!
-**     @brief
-**         This method sets the new period of the output signal. The
-**         period is expressed in [seconds] as a 16-bit unsigned
-**         integer number. This method is available only if ["Runtime
-**         setting type"] property is set to "interval" .
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         Time            - Period to set [in seconds]
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK
-**                           ERR_SPEED - This device does not work in
-**                           the active clock configuration
-**                           ERR_MATH - Overflow during evaluation
-**                           ERR_PARAM_RANGE - Parameter Time out of
-**                           range
-*/
-/* ===================================================================*/
-LDD_TError PpgLdd1_SetPeriodSec(LDD_TDeviceData *DeviceDataPtr, uint16_t Time)
-{
-  (void)DeviceDataPtr;                 /* Parameter is not used, suppress unused argument warning */
-  (void)Time;                          /* Parameter is not used, suppress unused argument warning */
-  /* Interval for this method is too narrow.
-     The method 'SetPeriodSec' will return only an error code. */
-  return ERR_MATH;                     /* Calculation error */
-}
-
-/*
-** ===================================================================
-**     Method      :  PpgLdd1_SetPeriodReal (component PPG_LDD)
-*/
-/*!
-**     @brief
-**         This method sets the new period of the output signal. The
-**         period is expressed in [seconds] as a real number. To use
-**         this method the compiler have to support floating point
-**         operations. This method is available only if ["Runtime
-**         setting type"] property is set to "interval" .
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         Time            - Period to set [in seconds]
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK
-**                           ERR_SPEED - This device does not work in
-**                           the active speed mode
-**                           ERR_MATH - Overflow during evaluation
-**                           ERR_PARAM_RANGE - Parameter out of range
-*/
-/* ===================================================================*/
-LDD_TError PpgLdd1_SetPeriodReal(LDD_TDeviceData *DeviceDataPtr, LDD_PPG_Tfloat Time)
-{
-  PpgLdd1_TDeviceData *DeviceDataPrv = (PpgLdd1_TDeviceData *)DeviceDataPtr;
-  LDD_PPG_Tfloat rtval;                /* Result of multiplication */
-
-  /* Time test - this test can be disabled by setting the "Ignore range checking"
-     property to the "yes" value in the "Configuration inspector" */
-  if ((Time > PpgLdd1_SPREAL_MAX) || (Time < PpgLdd1_SPREAL_MIN)) { /* Is the given value out of range? */
-    return ERR_PARAM_RANGE;            /* If yes then error */
-  }
-  rtval = Time * 375000.0F;            /* Multiply given value and Clock configuration 0 coefficient */
-  if (rtval > 0xFFFFUL) {              /* Is the result greater than 65535 ? */
-    DeviceDataPrv->CmpPeriod0 = 0xFFFFU; /* If yes then use maximal possible value */
-  }
-  else {
-    DeviceDataPrv->CmpPeriod0 = (uint16_t)rtval;
-  }
-  SetRatio(DeviceDataPtr);             /* Calculate and set up new appropriate values of the duty and period registers */
-  return ERR_OK;
-}
-
-/*
-** ===================================================================
-**     Method      :  PpgLdd1_SetFrequencyHz (component PPG_LDD)
-*/
-/*!
-**     @brief
-**         This method sets the new frequency of the output signal. The
-**         frequency is expressed in [Hz] as a 16-bit unsigned integer
-**         number. This method is available only if ["Runtime setting
-**         type"] property is set to "interval" .
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         Frequency       - Frequency to set [in Hz]
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK
-**                           ERR_SPEED - This device does not work in
-**                           the active clock configuration
-**                           ERR_MATH - Overflow during evaluation
-**                           ERR_PARAM_RANGE - Parameter Frequency is
-**                           out of range
-*/
-/* ===================================================================*/
-LDD_TError PpgLdd1_SetFrequencyHz(LDD_TDeviceData *DeviceDataPtr, uint16_t Frequency)
-{
-  PpgLdd1_TDeviceData *DeviceDataPrv = (PpgLdd1_TDeviceData *)DeviceDataPtr;
-  LDD_PPG_Tfloat rtval;                /* Result of multiplication */
-
-  /* Frequency test - this test can be disabled by setting the "Ignore range checking"
-     property to the "yes" value in the "Configuration inspector" */
-  if ((Frequency > PpgLdd1_SFREQ_HZ_MAX) || (Frequency < PpgLdd1_SFREQ_HZ_MIN)) { /* Is the given value out of range? */
-    return ERR_PARAM_RANGE;            /* If yes then error */
-  }
-  rtval = 375000.0F / Frequency;       /* Divide Clock configuration 0 coefficient by the given value */
-  if (rtval > 0xFFFFUL) {              /* Is the result greater than 65535 ? */
-    DeviceDataPrv->CmpPeriod0 = 0xFFFFU; /* If yes then use maximal possible value */
-  }
-  else {
-    DeviceDataPrv->CmpPeriod0 = (uint16_t)rtval;
-  }
-  SetRatio(DeviceDataPtr);             /* Calculate and set up new appropriate values of the duty and period registers */
-  return ERR_OK;
-}
-
-/*
-** ===================================================================
-**     Method      :  PpgLdd1_SetFrequencykHz (component PPG_LDD)
-*/
-/*!
-**     @brief
-**         This method sets the new frequency of the output signal. The
-**         frequency is expressed in [kHz] as a 16-bit unsigned integer
-**         number. This method is available only if ["Runtime setting
-**         type"] property is set to "interval" .
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         Frequency       - Frequency to set [in kHz]
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK
-**                           ERR_SPEED - This device does not work in
-**                           the active clock configuration
-**                           ERR_MATH - Overflow during evaluation
-**                           ERR_PARAM_RANGE - Parameter Frequency is
-**                           out of range
-*/
-/* ===================================================================*/
-LDD_TError PpgLdd1_SetFrequencykHz(LDD_TDeviceData *DeviceDataPtr, uint16_t Frequency)
-{
-  (void)DeviceDataPtr;                 /* Parameter is not used, suppress unused argument warning */
-  (void)Frequency;                     /* Parameter is not used, suppress unused argument warning */
-  /* Interval for this method is too narrow.
-     The method 'SetFrequencykHz' will return only an error code. */
-  return ERR_MATH;                     /* Calculation error */
-}
-
-/*
-** ===================================================================
-**     Method      :  PpgLdd1_SetFrequencyMHz (component PPG_LDD)
-*/
-/*!
-**     @brief
-**         This method sets the new frequency of the output signal. The
-**         frequency is expressed in [MHz] as a 16-bit unsigned integer
-**         number. This method is available only if ["Runtime setting
-**         type"] property is set to "interval" .
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         Frequency       - Frequency to set [in MHz]
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK
-**                           ERR_SPEED - This device does not work in
-**                           the active clock configuration
-**                           ERR_MATH - Overflow during evaluation
-**                           ERR_PARAM_RANGE - Parameter Frequency is
-**                           out of range
-*/
-/* ===================================================================*/
-LDD_TError PpgLdd1_SetFrequencyMHz(LDD_TDeviceData *DeviceDataPtr, uint16_t Frequency)
-{
-  (void)DeviceDataPtr;                 /* Parameter is not used, suppress unused argument warning */
-  (void)Frequency;                     /* Parameter is not used, suppress unused argument warning */
-  /* Interval for this method is too narrow.
-     The method 'SetFrequencyMHz' will return only an error code. */
-  return ERR_MATH;                     /* Calculation error */
 }
 
 /*
@@ -507,13 +210,18 @@ LDD_TError PpgLdd1_SetDutyUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time)
   PpgLdd1_TDeviceData *DeviceDataPrv = (PpgLdd1_TDeviceData *)DeviceDataPtr;
   LDD_PPG_Tfloat rtval;                /* Result of multiplication */
 
-  rtval = (Time * 24575.99999999693F) / (LDD_PPG_Tfloat)DeviceDataPrv->CmpPeriod0; /* Calculate new ratio for Clock configuration 0 */
   /* Time test - this test can be disabled by setting the "Ignore range checking"
      property to the "yes" value in the "Configuration inspector" */
-  if (rtval >= 0x00010000UL) {         /* Is the result greater or equal than 65536 ? */
+  if (Time > (uint16_t)0x1A93U) {      /* Is the given value out of range? */
     return ERR_PARAM_RANGE;            /* If yes then error */
   }
-  DeviceDataPrv->RatioStore = (uint16_t)rtval; /* Store new value of the ratio */
+  rtval = Time * 9.633869070953F;      /* Multiply given value and Clock configuration 0 coefficient */
+  if (rtval > 0xFFFFUL) {              /* Is the result greater than 65535 ? */
+    DeviceDataPrv->RatioStore = 0xFFFFU; /* If yes then use maximal possible value */
+  }
+  else {
+    DeviceDataPrv->RatioStore = (uint16_t)rtval;
+  }
   SetRatio(DeviceDataPtr);             /* Calculate and set up new appropriate values of the duty and period registers */
   return ERR_OK;                       /* OK */
 }
@@ -548,13 +256,18 @@ LDD_TError PpgLdd1_SetDutyMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time)
   PpgLdd1_TDeviceData *DeviceDataPrv = (PpgLdd1_TDeviceData *)DeviceDataPtr;
   LDD_PPG_Tfloat rtval;                /* Result of multiplication */
 
-  rtval = (Time * 24576000.0F) / (LDD_PPG_Tfloat)DeviceDataPrv->CmpPeriod0; /* Calculate new ratio for Clock configuration 0 */
   /* Time test - this test can be disabled by setting the "Ignore range checking"
      property to the "yes" value in the "Configuration inspector" */
-  if (rtval >= 0x00010000UL) {         /* Is the result greater or equal than 65536 ? */
+  if (Time > (uint16_t)0x07U) {        /* Is the given value out of range? */
     return ERR_PARAM_RANGE;            /* If yes then error */
   }
-  DeviceDataPrv->RatioStore = (uint16_t)rtval; /* Store new value of the ratio */
+  rtval = Time * 9633.86907095257F;    /* Multiply given value and Clock configuration 0 coefficient */
+  if (rtval > 0xFFFFUL) {              /* Is the result greater than 65535 ? */
+    DeviceDataPrv->RatioStore = 0xFFFFU; /* If yes then use maximal possible value */
+  }
+  else {
+    DeviceDataPrv->RatioStore = (uint16_t)rtval;
+  }
   SetRatio(DeviceDataPtr);             /* Calculate and set up new appropriate values of the duty and period registers */
   return ERR_OK;                       /* OK */
 }
@@ -572,10 +285,12 @@ LDD_TError PpgLdd1_SetDutyMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time)
 static void SetRatio(LDD_TDeviceData *DeviceDataPtr)
 {
   PpgLdd1_TDeviceData *DeviceDataPrv = (PpgLdd1_TDeviceData*)DeviceDataPtr;
+  uint16_t Period;
+  uint16_t Duty;
 
-  DeviceDataPrv->CmpDuty0 = (uint16_t)(((((uint32_t)DeviceDataPrv->CmpPeriod0 + 1U) * DeviceDataPrv->RatioStore) + 0x8000U) >> 0x10U); /* Calculate new value of duty register according to the given ratio for Clock configuration 'for_index_0' */
-  TPM_PDD_WriteChannelValueReg(TPM1_BASE_PTR, TPM_PDD_CHANNEL_0, DeviceDataPrv->CmpDuty0); /* Set the duty register in Clock configuration 'for_index_0' */
-  TPM_PDD_WriteModuloReg(TPM1_BASE_PTR, DeviceDataPrv->CmpPeriod0); /* Set the period register in Clock configuration 'for_index_0' */
+  Period = (uint16_t)TPM_PDD_ReadModuloReg(TPM1_BASE_PTR);
+  Duty = (uint16_t)(((((uint32_t)Period + 1U) * DeviceDataPrv->RatioStore) + (Period & 0x8000U)) >> 0x10U);
+  TPM_PDD_WriteChannelValueReg(TPM1_BASE_PTR, TPM_PDD_CHANNEL_0, Duty);
 }
 
 /* END PpgLdd1. */

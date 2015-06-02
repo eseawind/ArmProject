@@ -5,7 +5,7 @@
 **     Processor   : MKL25Z128VLK4
 **     Version     : Component 01.025, Driver 01.04, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-06-02, 08:45, # CodeGen: 98
+**     Date/Time   : 2015-06-02, 15:21, # CodeGen: 106
 **     Abstract    :
 **
 **     Settings    :
@@ -29,6 +29,8 @@
 */         
 
   #include "Cpu.h"
+  #include "MainMotor.h"
+  #include "PpgLdd1.h"
   #include "MainMotorDirection.h"
   #include "BitIoLdd1.h"
   #include "Selector1.h"
@@ -38,19 +40,15 @@
   #include "PwmLdd3.h"
   #include "Selector3.h"
   #include "PwmLdd4.h"
-  #include "TI1.h"
-  #include "TimerIntLdd1.h"
   #include "TU3.h"
-  #include "MainMotor.h"
-  #include "PpgLdd1.h"
+  #include "Hand0.h"
+  #include "PwmLdd6.h"
   #include "Hand1.h"
   #include "PwmLdd1.h"
   #include "Hand2.h"
   #include "PwmLdd5.h"
   #include "Controller.h"
   #include "ASerialLdd1.h"
-  #include "Hand0.h"
-  #include "PwmLdd6.h"
   #include "TU1.h"
   #include "RedLed.h"
   #include "BitIoLdd2.h"
@@ -117,7 +115,7 @@
     (tIsrFunc)&Cpu_Interrupt,          /* 0x29  0x000000A4   -   ivINT_DAC0                    unused by PE */
     (tIsrFunc)&Cpu_Interrupt,          /* 0x2A  0x000000A8   -   ivINT_TSI0                    unused by PE */
     (tIsrFunc)&Cpu_Interrupt,          /* 0x2B  0x000000AC   -   ivINT_MCG                     unused by PE */
-    (tIsrFunc)&TU3_Interrupt,          /* 0x2C  0x000000B0   2   ivINT_LPTimer                 used by PE */
+    (tIsrFunc)&Cpu_Interrupt,          /* 0x2C  0x000000B0   -   ivINT_LPTimer                 unused by PE */
     (tIsrFunc)&Cpu_Interrupt,          /* 0x2D  0x000000B4   -   ivINT_Reserved45              unused by PE */
     (tIsrFunc)&Cpu_Interrupt,          /* 0x2E  0x000000B8   -   ivINT_PORTA                   unused by PE */
     (tIsrFunc)&Cpu_Interrupt           /* 0x2F  0x000000BC   -   ivINT_PORTD                   unused by PE */

@@ -35,7 +35,7 @@
 extern "C" {
 #endif 
 
-extern unsigned short i,count; 
+
 extern void HandOpen(void);
 extern void HandClose(void);
 
@@ -77,21 +77,3 @@ void Cpu_OnNMIINT(void)
 ** ###################################################################
 */
 
-void TI1_OnInterrupt(void)
-{
-	if(i)
-	{
-		Hand0_SetDutyUS(500);
-		i=0;
-	}
-	else
-	{
-		Hand0_SetDutyUS(2500);
-		i=1;
-	}
-}
-
-void Encoder1_OnInterrupt(void)
-{
-	count++;
-}

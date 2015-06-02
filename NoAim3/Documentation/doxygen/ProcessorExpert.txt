@@ -28,19 +28,18 @@
 
 \page page_components Components 
 
+- \subpage PpgLdd1
 - \subpage BitIoLdd1
 - \subpage TU2
 - \subpage PwmLdd2
 - \subpage PwmLdd3
 - \subpage PwmLdd4
 - \subpage TU3
-- \subpage TimerIntLdd1
-- \subpage PpgLdd1
+- \subpage TU1
+- \subpage PwmLdd6
 - \subpage PwmLdd1
 - \subpage PwmLdd5
 - \subpage ASerialLdd1
-- \subpage TU1
-- \subpage PwmLdd6
 - \subpage BitIoLdd2
 
 

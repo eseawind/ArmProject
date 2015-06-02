@@ -7,7 +7,7 @@
 **     Version     : Component 01.025, Driver 01.04, CPU db: 3.00.000
 **     Datasheet   : KL25P80M48SF0RM, Rev.3, Sep 2012
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2015-06-02, 08:45, # CodeGen: 98
+**     Date/Time   : 2015-06-02, 15:21, # CodeGen: 106
 **     Abstract    :
 **
 **     Settings    :
@@ -35,6 +35,8 @@
 /* MODULE Cpu. */
 
 /* {Default RTOS Adapter} No RTOS includes */
+#include "MainMotor.h"
+#include "PpgLdd1.h"
 #include "MainMotorDirection.h"
 #include "BitIoLdd1.h"
 #include "Selector1.h"
@@ -44,19 +46,15 @@
 #include "PwmLdd3.h"
 #include "Selector3.h"
 #include "PwmLdd4.h"
-#include "TI1.h"
-#include "TimerIntLdd1.h"
 #include "TU3.h"
-#include "MainMotor.h"
-#include "PpgLdd1.h"
+#include "Hand0.h"
+#include "PwmLdd6.h"
 #include "Hand1.h"
 #include "PwmLdd1.h"
 #include "Hand2.h"
 #include "PwmLdd5.h"
 #include "Controller.h"
 #include "ASerialLdd1.h"
-#include "Hand0.h"
-#include "PwmLdd6.h"
 #include "TU1.h"
 #include "RedLed.h"
 #include "BitIoLdd2.h"
@@ -255,6 +253,8 @@ void PE_low_level_init(void)
                 ));                                  
   /* NVIC_IPR1: PRI_6=0 */
   NVIC_IPR1 &= (uint32_t)~(uint32_t)(NVIC_IP_PRI_6(0xFF));                                   
+  /* ### PPG_LDD "PpgLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)PpgLdd1_Init(NULL);
   /* ### BitIO_LDD "BitIoLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)BitIoLdd1_Init(NULL);
   /* ### PWM_LDD "PwmLdd2" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
@@ -263,19 +263,14 @@ void PE_low_level_init(void)
   (void)PwmLdd3_Init(NULL);
   /* ### PWM_LDD "PwmLdd4" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)PwmLdd4_Init(NULL);
-  /* ### TimerInt_LDD "TimerIntLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
-  (void)TimerIntLdd1_Init(NULL);
-  /* ### TimerInt "TI1" init code ... */
-  /* ### PPG_LDD "PpgLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
-  (void)PpgLdd1_Init(NULL);
+  /* ### PWM_LDD "PwmLdd6" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)PwmLdd6_Init(NULL);
   /* ### PWM_LDD "PwmLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)PwmLdd1_Init(NULL);
   /* ### PWM_LDD "PwmLdd5" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)PwmLdd5_Init(NULL);
   /* ### Asynchro serial "Controller" init code ... */
   Controller_Init();
-  /* ### PWM_LDD "PwmLdd6" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
-  (void)PwmLdd6_Init(NULL);
   /* ### BitIO_LDD "BitIoLdd2" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)BitIoLdd2_Init(NULL);
   __EI();
